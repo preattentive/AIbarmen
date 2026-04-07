@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    /* Плавная прокрутка */
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-stone-950 text-stone-100;
+    /* Предотвращаем горизонтальный скролл на мобильных */
+    overflow-x: hidden;
+  }
+
+  /* Скрытие нативного скроллбара (необязательно) */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-stone-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-stone-700 rounded-full;
+  }
+}
+
+@layer utilities {
+  /* Анимация появления */
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
