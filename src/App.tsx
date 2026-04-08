@@ -14,7 +14,7 @@ export function App() {
         <Route path="/taste" element={<Taste />} />
         <Route path="/results" element={<Results />} />
         <Route path="/recipe/:id" element={<Recipe />} />
-        {/* Любой неизвестный путь → главная */}
+{/* Любой неизвестный путь → главная */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

@@ -19,6 +19,7 @@ export default {
       },
       fontFamily: {
         display: ['"Playfair Display"', 'Georgia', 'serif'],
+        heading: ['"PT Sans"', 'sans-serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
       },
     },

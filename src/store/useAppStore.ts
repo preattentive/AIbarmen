@@ -63,6 +63,10 @@ interface StoreState {
   isLoading: boolean
   error: string | null
 
+  // Obsidian настройки
+  obsidianApiKey: string
+  obsidianFolder: string
+
   // Действия
   toggleIngredient: (name: string) => void
   clearIngredients: () => void
@@ -70,6 +74,7 @@ interface StoreState {
   setCurrentCocktail: (cocktail: Cocktail) => void
   searchCocktails: () => Promise<void>
   reset: () => void
+  setObsidianSettings: (apiKey: string, folder: string) => void
 }
 
 export const useAppStore = create<StoreState>()(
@@ -82,6 +87,8 @@ export const useAppStore = create<StoreState>()(
       currentCocktail: null,
       isLoading: false,
       error: null,
+      obsidianApiKey: '',
+      obsidianFolder: 'Коктейли',
 
       toggleIngredient(name) {
         const { selectedIngredients } = get()
@@ -148,13 +155,18 @@ export const useAppStore = create<StoreState>()(
           error: null,
         })
       },
+
+      setObsidianSettings(apiKey, folder) {
+        set({ obsidianApiKey: apiKey, obsidianFolder: folder })
+      },
     }),
     {
       name: 'virtual-barmen-storage',
-      // Сохраняем только выбор пользователя, не результаты поиска
       partialize: (state) => ({
         selectedIngredients: state.selectedIngredients,
         tasteTags: state.tasteTags,
+        obsidianApiKey: state.obsidianApiKey,
+        obsidianFolder: state.obsidianFolder,
       }),
     }
   )

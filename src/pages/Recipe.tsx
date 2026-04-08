@@ -3,19 +3,28 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout/Layout'
 import { useAppStore } from '../store/useAppStore'
 import { fetchCocktailById } from '../api/cocktaildb'
+import { saveToObsidian } from '../api/obsidian'
 import type { Cocktail } from '../types'
+
+type SaveStatus = 'idle' | 'saving' | 'success' | 'error' | 'no-key'
 
 export function Recipe() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const cachedCocktail = useAppStore((s) => s.currentCocktail)
   const selectedIngredients = useAppStore((s) => s.selectedIngredients)
+  const obsidianApiKey = useAppStore((s) => s.obsidianApiKey)
+  const obsidianFolder = useAppStore((s) => s.obsidianFolder)
+  const setObsidianSettings = useAppStore((s) => s.setObsidianSettings)
 
   const [cocktail, setCocktail] = useState<Cocktail | null>(
-    // Используем кешированный, если ID совпадает
     cachedCocktail?.id === id ? cachedCocktail : null
   )
   const [loading, setLoading] = useState(!cocktail)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [showSettings, setShowSettings] = useState(false)
+  const [draftKey, setDraftKey] = useState(obsidianApiKey)
+  const [draftFolder, setDraftFolder] = useState(obsidianFolder)
 
   useEffect(() => {
     if (cocktail || !id) return
@@ -49,6 +58,30 @@ export function Recipe() {
         </div>
       </Layout>
     )
+  }
+
+  async function handleSaveToObsidian() {
+    if (!cocktail) return
+    if (!obsidianApiKey) {
+      setSaveStatus('no-key')
+      setShowSettings(true)
+      return
+    }
+    setSaveStatus('saving')
+    try {
+      await saveToObsidian(cocktail, obsidianApiKey, obsidianFolder)
+      setSaveStatus('success')
+      setTimeout(() => setSaveStatus('idle'), 3000)
+    } catch {
+      setSaveStatus('error')
+      setTimeout(() => setSaveStatus('idle'), 4000)
+    }
+  }
+
+  function handleSaveSettings() {
+    setObsidianSettings(draftKey.trim(), draftFolder.trim() || 'Коктейли')
+    setShowSettings(false)
+    setSaveStatus('idle')
   }
 
   const selectedSet = new Set(selectedIngredients.map((i) => i.toLowerCase()))
